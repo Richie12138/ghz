@@ -44,6 +44,7 @@ Flags:
       --tags=                  JSON representation of user-defined string tags.
       --cpus=12                Number of cpu cores to use.
       --debug=                 The path to debug log file.
+  -e, --enable-compression     Enable Gzip compression on requests.
   -v, --version                Show application version.
 
 Args:
