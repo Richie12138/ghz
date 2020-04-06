@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -132,7 +133,11 @@ func newRequester(c *RunConfig) (*Requester, error) {
 	if !c.binary && !reqr.mtd.IsClientStreaming() {
 		if strings.IndexRune(string(c.data), '[') == 0 { // it's an array
 			var dat []map[string]interface{}
-			if err := json.Unmarshal(c.data, &dat); err != nil {
+
+			// fix bug
+			decoder := json.NewDecoder(bytes.NewBuffer(c.data))
+			decoder.UseNumber()
+			if err := decoder.Decode(&dat); err != nil {
 				return nil, err
 			}
 
@@ -328,7 +333,7 @@ func (b *Requester) runWorkers() error {
 
 	// Ignore the case where b.N % b.C != 0.
 
-	n := 0                            // connection counter
+	n := 0 // connection counter
 	for i := 0; i < b.config.c; i++ { // concurrency counter
 
 		wID := "g" + strconv.Itoa(i) + "c" + strconv.Itoa(n)
